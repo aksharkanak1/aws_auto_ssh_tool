@@ -3,15 +3,18 @@ import helper
 import Instance
 import sys
 from prettytable import PrettyTable
+from boto.vpc import VPCConnection
 
 StatusTblFormat = ["InstanceID","Status Code" ,"Status","Keyname","Pub Ip"]
 IntfFormat = ["ENI-id","Private Addr ","Instance-id","status"]
 kpformat = ["Name","Fingerprint"]
 eipFromat = ["EIP","Instance-id","private address"]
 sgTableFormat = ["name","rules"]
+volTableFormat =["id","status","size","snapshot"]
+vpcTableFormat = ["id","state","cidr_block"]
 
 class regions():
-      def __init__(self,conn,name,fil):
+      def __init__(self,conn,name,fil,conf):
           self.conn = conn
           self.name = name
           self.fil = fil 
@@ -22,6 +25,8 @@ class regions():
           self.eipList=[]
           self.keypair =[]          
           self.sgList = []
+          self.vpcList=[]
+          self.conf = conf
  
       def getList(self,conf):
           try :
@@ -54,9 +59,17 @@ class regions():
                pass      
           try :
                self.sgList = self.conn.get_all_security_groups()
-               print self.sgList
           except:
                pass  
+          try :
+               self.volList = self.conn.get_all_volumes()
+          except :
+               pass  
+          try :
+               vpcConn =VPCConnection(aws_access_key_id=self.conf.access_key_id,aws_secret_access_key=self.conf.access_key_sec,debug=10)
+               self.vpcList=vpcConn.get_all_vpcs()
+          except:
+               pass
 
       def performActionWithInInstance(self,ran):
          """ This API will be used to perfrom action 
@@ -102,14 +115,27 @@ class regions():
       def dumpSecurityGrpList(self,fd):
           sgTable = PrettyTable(sgTableFormat)
           for sgs in self.sgList:
-              print sgs.name , sgs.rules
               sgTable.add_row([sgs.name,sgs.rules]) 
           #[sgTable.add_row([sgs.name,sgs.rules]) for sgs in self.sgList]
+          fd.write("\n")
           fd.write(str(sgTable))
           fd.flush()        
- 
+    
+      def dumpVolList(self,fd):
+          volTable = PrettyTable(volTableFormat) 
+          [volTable.add_row([vol.id,vol.status,vol.size,vol.snapshot_id]) for vol in self.volList]        
+          fd.write("\n")
+          fd.write(str(volTable))
+          fd.flush()
+
+      def dumpVPCList(self,fd):
+          vpcTable = PrettyTable(vpcTableFormat) 
+          [vpcTable.add_row([vpc.id,vpc.state,vpc.cidr_block]) for vpc in self.vpcList]        
+          fd.write("\n")
+          fd.write(str(vpcTable))
+          fd.flush()
+  
       def dumpRegionInfo(self,fd):
-          # dump the instance list 
           statusTbl = PrettyTable(StatusTblFormat)
           for key in self.insts.keys():
               if len(self.insts[key]) > 0 :
@@ -129,12 +155,14 @@ class regions():
                     IntfTable.add_row([eniid,prip,attInst.instance_id,intf.status])
                  else:
                     IntfTable.add_row([eniid,prip,"NA",intf.status])
+             fd.write("\n")
              fd.write(str(IntfTable))
              fd.flush()
           else :
              fd.write("\nNumber of network interface is 0\n")
-          self.dumpSecurityGrpList(fd)  
-          
+          self.dumpSecurityGrpList(fd) 
+          self.dumpVolList(fd) 
+          self.dumpVPCList(fd)           
 
       def getCachedInstList(self,key):
           return self.insts[key]         

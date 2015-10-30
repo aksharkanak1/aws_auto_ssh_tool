@@ -38,4 +38,23 @@ def scpCopyfile(inst,ip,usr,fromloc,toloc,keyfile,tout,dir):
     except :
         inst.addToExcecptionList(sys.exc_info())
         raise
+
+def getAwsCred(file):
+    access_key_id = None
+    access_key_sec = None
+    try :
+         fd = open(file,"r")
+    except :
+         return None,None
+
+    for line in fd :
+        line.strip()
+        if line.startswith("ACCESS_KEY_ID="):
+           access_key_id = line[len("ACCESS_KEY_ID="):].rstrip("\n")
+             
+        elif line.startswith("ACCESS_SECERT_KEY="):
+           access_key_sec = line[len("ACCESS_SECERT_KEY="):].rstrip("\n")
+
+    return access_key_id,access_key_sec
+
    

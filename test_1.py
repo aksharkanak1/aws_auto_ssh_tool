@@ -13,10 +13,15 @@ if __name__ == "__main__":
    print m.connToReg['us-west-2'].insts
    m.CreateActiveInstListOfAllRegions()
    print "The active list is %s" % str(m.runningInstList)
-   m.dumpAwsResourceInfo()
+
+   
    m.updateRegionsOtherResource(config,"")
-   for i in m.connToReg['us-west-2'].insts[16] :
-       i.actionWithInInst()
-   m.dumpExceptionList("./abc")
-   m.dumpResultSet()
+   m.dumpAwsResourceInfo()
+   if config.checkIfMultiProcessingIsReq() == False:
+       for i in m.connToReg['us-west-2'].insts[16] :
+           i.actionWithInInst()
+       m.dumpExceptionList("./abc")
+       m.dumpResultSet()
+   else :
+       main.createWorkers(m)
        

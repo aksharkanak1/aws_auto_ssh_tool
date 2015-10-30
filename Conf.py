@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from utils import getAwsCred
+
 FROM_OUTSIDE = 1
 FROM_INSIDE = 2
 
@@ -15,6 +17,10 @@ class conf:
              raise 
          for line in fd :
              line = line.strip()  #clear the starting white space 
+             if line.startswith("cred_file "):
+                temp = line[len("cred_file "):]
+                self.cred_file = temp
+ 
              if line.startswith("keys "):
                 temp = line[len("keys "):]
                 self.keyfile = temp.split(",") 
@@ -76,6 +82,9 @@ class conf:
                 temp=line[len("aws_res_info "):]
                 self.awsInfoFile = temp
          
+             if line.startswith("process "):
+                temp=line[len("process "):]
+                self.num_process = int(temp)
          return 
 
      def __init__(self,confFile):
@@ -87,7 +96,14 @@ class conf:
          self.scripts =[] 
          self.exp_op_type = SINGLE_FILE
          self.res_op_file = SINGLE_FILE
-         self.parseConfFile(confFile) 
+         self.cred_file = None
+         self.parseConfFile(confFile)
+         self.access_key_id = None
+         self.access_key_sec =  None 
+         self.access_key_id,self.access_key_sec = getAwsCred(self.cred_file)
+         if self.access_key_id == None or self.access_key_sec == None:
+            print "THE CREDS ARE NOT VALID"
+            quit()  
      
      def printOnScreen(self):
          print "users ", self.users
@@ -108,4 +124,11 @@ class conf:
   
      def getusers(self):
          return self.users
-    
+
+     def getNumOfProcess(self):
+         return self.num_process
+   
+     def checkIfMultiProcessingIsReq(self):
+         if self.num_process == None or self.num_process == 0:
+            return False
+         return True     
