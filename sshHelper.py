@@ -98,7 +98,7 @@ def executeCmdList(inst,fileName,lst,debugOn):
 def createSSHSession(inst,ip,uname,passwd,keyfile):
     ssh = pxssh.pxssh()
     try :
-        ssh.login(ip,uname,passwd,ssh_key=keyfile)
+        ssh.login(ip,uname,passwd,ssh_key=keyfile,login_timeout=100)
     except :
         inst.addToExcecptionList(sys.exc_info())
         raise

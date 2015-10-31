@@ -43,7 +43,6 @@ class InstanceClass():
            return 
         for users in self.conf.getusers():
            try: 
-               #pdb.set_trace()
                self.ssh = createSSHSession(self,self.botoInstInfo.ip_address,users,"",self.conf.getKeyFile()) 
                self.user=users
                break   
@@ -106,14 +105,17 @@ class InstanceClass():
        else :
           tempfd = open("".join([self.conf.res_folder,self.botoInstInfo.id]),"w")
           tempfd.write(str(tbl))
-          tempfd.write("\n")    
-       tempfd.write("Dumping the script list result for instance "+str(self.botoInstInfo)+"\n")
-       tbl = PrettyTable(["Sno","scripts","result"])
-       for i,j in enumerate(self.scriptStatus):
-           tbl.add_row([str(i),self.conf.scriptFiles[i],str(j)])    
-       tempfd.write(str(tbl))
-       tempfd.write("\n")
-       tempfd.flush()
+          tempfd.write("\n")
+       if len(self.conf.scriptFiles) > 0 :    
+          tempfd.write("Dumping the script list result for instance "+str(self.botoInstInfo)+"\n")
+          tbl = PrettyTable(["Sno","scripts","result"])
+          for i,j in enumerate(self.scriptStatus):
+              tbl.add_row([str(i),self.conf.scriptFiles[i],str(j)])    
+          tempfd.write(str(tbl))
+          tempfd.write("\n")
+          tempfd.flush()
+       else :
+          tempfd.write("Zero script list for instance "+str(self.botoInstInfo)+"\n")
        if self.conf.res_op_type == Conf.MULTIPLE_FILES:
           tempfd.close()
  

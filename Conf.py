@@ -40,7 +40,7 @@ class conf:
                 for files in  self.cmdsFiles:
                     with open(files,'r') as fd : 
                          for templine in fd :
-                             templine = templine.rstrip("\n")
+                             templine = (templine.rstrip("\n")).strip()
                              if len(templine) >0 : 
                                 self.ListOfCmds.append(templine)
    
@@ -97,6 +97,8 @@ class conf:
          self.exp_op_type = SINGLE_FILE
          self.res_op_file = SINGLE_FILE
          self.cred_file = None
+         self.num_process =0
+         self.scriptFiles=[]
          self.parseConfFile(confFile)
          self.access_key_id = None
          self.access_key_sec =  None 
