@@ -1,0 +1,26 @@
+The file contains information about the various fields in the configuration file
+key : The private key file.Its used for authentication when login(SSH) to EC2 Instance .
+      Currently only one file is supported 
+users : The user name which will be used for ssh login to EC2 instance
+regions : List of regions.The appilcation will be acting on the active EC2 instances which are
+          present within these regions.  
+cmds : List of command files . Each command file will be containing list of commands which will
+       executed with EC2 Instance .
+mode : either "inside" or "outside"."inside" means the app is being executed from a system which is outside 
+       AWS.Here the app expects that the EC2 instance have public or Elastic IP address . "inside" means
+       the app is being executed from a system which is with in AWS.Here the app will be using the private
+       IP address of EC2 instance."inside" is currently not supported.
+
+process : Number of process 
+
+cred_file : File containing AWS credentails.for example 
+            ACCESS_KEY_ID=<>
+            ACCESS_SECERT_KEY=<>
+
+aws_res_info : Its a output file. The app will dump the information about the AWS resource in this file .
+
+result_folder : This Folder will be containing results of the actions(cmds and scripts) taken with in the EC2 instances .
+
+exception_folder : This folder will be containing information in the exceptions which have occured .
+
+       
