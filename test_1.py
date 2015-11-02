@@ -13,8 +13,6 @@ if __name__ == "__main__":
    print m.connToReg['us-west-2'].insts
    m.CreateActiveInstListOfAllRegions()
    print "The active list is %s" % str(m.runningInstList)
-
-   
    m.updateRegionsOtherResource(config,"")
    m.dumpAwsResourceInfo()
    if config.checkIfMultiProcessingIsReq() == False:
