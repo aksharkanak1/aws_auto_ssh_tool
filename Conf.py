@@ -85,6 +85,9 @@ class conf:
              if line.startswith("process "):
                 temp=line[len("process "):]
                 self.num_process = int(temp)
+
+             if line.startswith("S3Loc"):
+                self.S3Loc=line[len("S3Loc "):]
          return 
 
      def __init__(self,confFile):

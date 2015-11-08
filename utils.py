@@ -3,6 +3,8 @@
 from pexpect import spawn,TIMEOUT,EOF 
 import sys
 import signal 
+import os
+import shutil
 decryptFormat = "openssl aes-256-cbc -d -in %s -out %s "
 FROM_REMOTE_SYSTEM = 1 
 INTO_REMOTE_SYSTEM = 2
@@ -57,4 +59,22 @@ def getAwsCred(file):
 
     return access_key_id,access_key_sec
 
-   
+def copyAndZip(lst):
+    dstFldr = "".join(["/tmp/",str(random.randint(1,20000000000))])
+    for i in lst:
+        finalPart=i[i.rfind("/")+1:]
+        if os.path.isdir(i) == True :
+           shutil.copytree(i,"".join([dstFldr,finalPart]))
+        else: 
+           shutil.copy(i,"".join([dstFldr,finalPart]))
+
+    filePrefix = file="%d-%d-%d-%d-%d-%d" % (time.localtime().tm_year,time.localtime().tm_mon,time.localtime().tm_mday,time.localtime().tm_hour,time.localtime().tm_min,time.localtime().tm_sec) 
+    shutil.make_archive(filePrefix+"-result","gztar",root_dir=dstFldr,base_dir="")
+    finalFile="".join(["./",filePrefix,"-result","gz.tar"])
+    shutil.rmtree(dstFldr)
+    if os.path.exists(finalFile):
+       return finalFile
+    
+    retun None 
+    
+    

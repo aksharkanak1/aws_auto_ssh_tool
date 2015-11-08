@@ -93,7 +93,8 @@ def createWorkers(m) :
     delta=0
     if runInstLen <= num_process:
        instEnd = 0
-       interval= 0 
+       interval= 0
+       num_process = runInstLen 
     else :
        interval = runInstLen/num_process
        delta = runInstLen%num_process

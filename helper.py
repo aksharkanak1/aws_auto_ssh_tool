@@ -1,5 +1,7 @@
 #!/usr/bin/python 
 import imports
+from boto.s3.connection import S3Connection
+from boto.s3.key import Key
 
 ALL=100
 PENDING=0
@@ -26,6 +28,25 @@ def getInstList(conn):
 
     return output
 
+def uploadCallbackForS3(dataUploaded,totalSize):
+    print "\n%d of %d uploaded\n" % (dataUploaded,totalSize)
+
+
+def uploadFileToS3(bucket,fileName,conf):
+    s3conn=S3Connection(conf.access_key_id, conf.access_key_sec)
+    try:
+           buck = s3conn.get_bucket(bucket)
+    except :
+           print "Failed to get the Bucket %s " % bucket
+           return False
+    try :
+           keyFile=Key(buck,fileName)
+           keyFile.set_contents_from_filename(fileName,replace=True,cb=uploadCallback,cbnum=10)
+    except:
+           print "Failed to Upload the file to S3"
+           return False
+
+    return True
 
 
 
