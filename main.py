@@ -82,6 +82,11 @@ class mainClass:
       def getRunningInstList(self):
           return self.runningInstList
 
+      def uploadFinalResultToS3(self):
+          if self.conf.getS3Loc() == None:
+             finalFile=utils.copyAndZip(self.conf.getopFldrFileList())
+             helper.uploadFileToS3(self.getS3Loc(),finalFile,self.conf)
+
 def workerProcess(m,fromIdx,toIdx):
     m.execTaskForInstsList(fromIdx,toIdx) 
 
@@ -114,6 +119,9 @@ def createWorkers(m) :
                  instEnd+=interval+delta
               else: 
                  instEnd+=interval
-        
+
+    # wait until all the child process dead 
+    for p in m.list_process:
+        p.join()
     
                

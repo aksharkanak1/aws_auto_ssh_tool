@@ -22,4 +22,4 @@ if __name__ == "__main__":
        m.dumpResultSet()
    else :
        main.createWorkers(m)
-       
+   m.uploadFinalResultToS3()       

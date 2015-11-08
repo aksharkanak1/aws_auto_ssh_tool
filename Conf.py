@@ -86,8 +86,8 @@ class conf:
                 temp=line[len("process "):]
                 self.num_process = int(temp)
 
-             if line.startswith("S3Loc"):
-                self.S3Loc=line[len("S3Loc "):]
+             if line.startswith("S3Bucket"):
+                self.S3Loc=line[len("S3Bucket "):]
          return 
 
      def __init__(self,confFile):
@@ -102,6 +102,7 @@ class conf:
          self.cred_file = None
          self.num_process =0
          self.scriptFiles=[]
+         self.S3Loc=None
          self.parseConfFile(confFile)
          self.access_key_id = None
          self.access_key_sec =  None 
@@ -109,7 +110,12 @@ class conf:
          if self.access_key_id == None or self.access_key_sec == None:
             print "THE CREDS ARE NOT VALID"
             quit()  
-     
+         self.opFldrFileList=[]
+         self.opFldrFileList.append(self.awsInfoFile)
+         self.opFldrFileList.append(self.res_folder)
+         self.opFldrFileList.append(self.exp_folder)
+             
+ 
      def printOnScreen(self):
          print "users ", self.users
          print "keyfiles ", self.keyfile
@@ -132,6 +138,12 @@ class conf:
 
      def getNumOfProcess(self):
          return self.num_process
+
+     def getopFldrFileList(self):
+         return self.opFldrFileList
+
+     def getS3Loc(self):
+         return self.S3Loc  
    
      def checkIfMultiProcessingIsReq(self):
          if self.num_process == None or self.num_process == 0:
