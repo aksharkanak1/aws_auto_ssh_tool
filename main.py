@@ -4,6 +4,8 @@ import boto.ec2
 import regions
 import Conf
 import multiprocessing
+import utils
+import helper
 class mainClass:
       def __init__(self,conf):
           self.regions=conf.getRegionList()
@@ -83,9 +85,9 @@ class mainClass:
           return self.runningInstList
 
       def uploadFinalResultToS3(self):
-          if self.conf.getS3Loc() == None:
+          if self.conf.getS3Loc() != None:
              finalFile=utils.copyAndZip(self.conf.getopFldrFileList())
-             helper.uploadFileToS3(self.getS3Loc(),finalFile,self.conf)
+             helper.uploadFileToS3(self.conf.getS3Loc(),finalFile,self.conf)
 
 def workerProcess(m,fromIdx,toIdx):
     m.execTaskForInstsList(fromIdx,toIdx) 
