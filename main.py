@@ -87,6 +87,7 @@ class mainClass:
       def uploadFinalResultToS3(self):
           if self.conf.getS3Loc() != None:
              finalFile=utils.copyAndZip(self.conf.getopFldrFileList())
+             print finalFile
              helper.uploadFileToS3(self.conf.getS3Loc(),finalFile,self.conf)
 
 def workerProcess(m,fromIdx,toIdx):

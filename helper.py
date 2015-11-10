@@ -1,4 +1,5 @@
 #!/usr/bin/python 
+import sys
 import imports
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
@@ -41,9 +42,10 @@ def uploadFileToS3(bucket,fileName,conf):
            return False
     try :
            keyFile=Key(buck,fileName)
-           keyFile.set_contents_from_filename(fileName,replace=True,cb=uploadCallback,cbnum=10)
+           keyFile.set_contents_from_filename(fileName,replace=True,cb=uploadCallbackForS3,num_cb=10)
     except:
            print "Failed to Upload the file to S3"
+           print "%s" % str(sys.exc_info())
            return False
 
     return True

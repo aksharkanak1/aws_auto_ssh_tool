@@ -76,7 +76,7 @@ def copyAndZip(lst):
 
     filePrefix = file="%d-%d-%d-%d-%d-%d" % (time.localtime().tm_year,time.localtime().tm_mon,time.localtime().tm_mday,time.localtime().tm_hour,time.localtime().tm_min,time.localtime().tm_sec) 
     shutil.make_archive(filePrefix+"-result","gztar",root_dir=dstFldr,base_dir="./")
-    finalFile="".join(["./",filePrefix,"-result","gz.tar"])
+    finalFile="".join(["./",filePrefix,"-result",".tar.gz"])
     shutil.rmtree(dstFldr)
     if os.path.exists(finalFile):
        return finalFile
