@@ -7,7 +7,10 @@ import os
 import shutil
 import random
 import time
+from multiprocessing import cpu_count
 decryptFormat = "openssl aes-256-cbc -d -in %s -out %s "
+tasksetFile = "/usr/bin/taskset"
+taskSetCmdFmt = "/usr/bin/taskset -p 0x%x %d"
 FROM_REMOTE_SYSTEM = 1 
 INTO_REMOTE_SYSTEM = 2
 
@@ -83,4 +86,43 @@ def copyAndZip(lst):
     
     return None 
     
+def genForCpuAffinity(maxCpuToUse=0xffffffff):
+    """
+         API which can be used for generating the CPU affinity mask 
+    """
+    cpus=cpu_count()
+    if maxCpuToUse == cpus or maxCpuToUse == 0xffffffff :
+       maxCpuMask=0x1<<(cpus-1)
+    else :
+       maxCpuMask = 0x1 << (maxCpuToUse-1)
+    cpumask=0x1
+    while True :
+          inp = yield
+          if inp == "continue":
+             yield cpumask
+             cpumask = cpumask <<1
+             if cpumask >  maxCpuMask:
+                cpumask =0x1
+          else :
+             return 
+
+
+def setCpuAffinityForProcess(pid,cpuMask):
+    """
+        API for setting the process cpu affinity   
+    """
+    if os.path.exists(tasksetFile) != True:
+        return False 
+    temp = 0x1<<(cpu_count()-1)
+    if cpuMask > temp :
+        return False 
+    os.system(taskSetCmdFmt % (cpuMask))
+    return True 
+
+
     
+    
+           
+       
+     
+        

@@ -3,6 +3,7 @@ import sys
 import imports
 from boto.s3.connection import S3Connection
 from boto.s3.key import Key
+from os import remove
 
 ALL=100
 PENDING=0
@@ -47,7 +48,7 @@ def uploadFileToS3(bucket,fileName,conf):
            print "Failed to Upload the file to S3"
            print "%s" % str(sys.exc_info())
            return False
-
+    remove(fileName)
     return True
 
 
