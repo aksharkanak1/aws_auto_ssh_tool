@@ -5,13 +5,14 @@ import sys
 from prettytable import PrettyTable
 from boto.vpc import VPCConnection
 
-StatusTblFormat = ["InstanceID","Status Code" ,"Status","Keyname","Pub Ip"]
+StatusTblFormat = ["InstanceID","Status Code" ,"Status","Keyname","Pub Ip","AMI"]
 IntfFormat = ["ENI-id","Private Addr ","Instance-id","status"]
 kpformat = ["Name","Fingerprint"]
 eipFromat = ["EIP","Instance-id","private address"]
 sgTableFormat = ["name","rules"]
 volTableFormat =["id","status","size","snapshot"]
 vpcTableFormat = ["id","state","cidr_block"]
+amiTableFormat = ["id","platform","vtype","description"]
 
 class regions():
       def __init__(self,conn,name,fil,conf):
@@ -26,6 +27,7 @@ class regions():
           self.keypair =[]          
           self.sgList = []
           self.vpcList=[]
+          self.amiList=[]
           self.conf = conf
  
       def getList(self,conf):
@@ -64,7 +66,18 @@ class regions():
           try :
                self.volList = self.conn.get_all_volumes()
           except :
-               pass  
+               pass
+           
+          for key in self.insts.keys():
+               if len(self.insts[key]) > 0 :
+                   for inst in self.insts[key]:
+                       img_present = False
+                       for img in self.amiList:
+                           if img.id == inst.image_id:
+                              img_present = True 
+                              break
+                           if img_present == False :
+                              self.amiList.append(self.conn.get_image(inst.botoInstInfo.image_id))
           try :
                vpcConn =VPCConnection(aws_access_key_id=self.conf.access_key_id,aws_secret_access_key=self.conf.access_key_sec,debug=10)
                self.vpcList=vpcConn.get_all_vpcs()
@@ -135,15 +148,23 @@ class regions():
           fd.write(str(vpcTable))
           fd.flush()
   
+      def dumpAMIList(self,fd):
+          amiTable = PrettyTable(amiTableFormat) 
+          [amiTable.add_row([ami.id,ami.platform,ami.virtualization_type,ami.description]) for ami in self.amiList]        
+          fd.write("\n")
+          fd.write(str(amiTable))
+          fd.flush()
+
       def dumpRegionInfo(self,fd):
           statusTbl = PrettyTable(StatusTblFormat)
           for key in self.insts.keys():
               if len(self.insts[key]) > 0 :
                  for inst in self.insts[key]:
                      instSt=inst.botoInstInfo._state
-                     statusTbl.add_row([inst.botoInstInfo.id,instSt.code,instSt.name,inst.botoInstInfo.key_name,inst.botoInstInfo.ip_address])
+                     statusTbl.add_row([inst.botoInstInfo.id,instSt.code,instSt.name,inst.botoInstInfo.key_name,inst.botoInstInfo.ip_address,inst.botoInstInfo.image_id])
           fd.write(str(statusTbl))
           fd.flush()
+          self.dumpAMIList(fd)
           #dump the network interface list
           if len(self.netIntf) > 0:
              IntfTable = PrettyTable(IntfFormat)
