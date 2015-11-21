@@ -14,14 +14,14 @@ STOPPING = 64
 STOPPED=80
 
 #function to get the list instance to work upon
-def getInstList(conn):
+def getInstList(conn,filter):
     """ This function will be returning the instances
         The return is dictionary 
     """ 
     output ={PENDING:[],RUNNING:[],SHUTTING_DONW:[],TERMINATED:[],STOPPING:[],STOPPED:[]}
 
     #get the list off all the instance 
-    Instlist = conn.get_only_instances()
+    Instlist = conn.get_only_instances(filters=filter)
     if len(Instlist) > 0:
        for inst in Instlist :
            instSt=inst._state

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 from utils import getAwsCred
+import os
 
 FROM_OUTSIDE = 1
 FROM_INSIDE = 2
@@ -88,6 +89,9 @@ class conf:
 
              if line.startswith("S3Bucket"):
                 self.S3Loc=line[len("S3Bucket "):]
+
+             if line.startswith("filter"):
+                self.filter=line[len("filter "):]
          return 
 
      def __init__(self,confFile):
@@ -103,6 +107,7 @@ class conf:
          self.num_process =0
          self.scriptFiles=[]
          self.S3Loc=None
+         self.filter=""
          self.parseConfFile(confFile)
          self.access_key_id = None
          self.access_key_sec =  None 
@@ -114,6 +119,8 @@ class conf:
          self.opFldrFileList.append(self.awsInfoFile)
          self.opFldrFileList.append(self.res_folder)
          self.opFldrFileList.append(self.exp_folder)
+         self.parseFilterFile()
+         
              
  
      def printOnScreen(self):
@@ -148,4 +155,12 @@ class conf:
      def checkIfMultiProcessingIsReq(self):
          if self.num_process == None or self.num_process == 0:
             return False
-         return True     
+         return True    
+
+     def parseFilterFile(self):
+         if os.path.exists(self.filter):
+            fp = open(self.filter)
+            s=fp.read()
+            self.filterMap = json.loads(s)
+         else :
+            self.filterMap={}

@@ -32,7 +32,7 @@ class regions():
  
       def getList(self,conf):
           try :
-              instList = helper.getInstList(self.conn)
+              instList = helper.getInstList(self.conn,self.conf.filterMap)
           except :
               self.expList.append(sys.exc_info())
               return False 
