@@ -57,6 +57,7 @@ class InstanceClass():
            return 
         self.actionWithInInstRunCmds()
         self.actionWithInInstRunScripts()
+        self.ssh.logout()
         self.getResultFile()          
 
     def getResultFile(self):
